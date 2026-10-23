@@ -1,0 +1,2 @@
+export function matchWords(score:number):string{const value=score>1?score/100:score;return value>=.75?'Strong match':value>=.55?'Good match':'Partial match'}
+export function confidenceWords(confidence:number):string{return confidence>=.75?'High confidence':confidence>=.5?'Medium confidence':'Low confidence'}

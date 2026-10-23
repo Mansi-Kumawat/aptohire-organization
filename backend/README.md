@@ -1,0 +1,3 @@
+# Backend boundary
+
+This folder intentionally contains no migrations, service-role key, or database implementation. Those belong in the separate `aptohire-backend/` project. Copy its authoritative `docs/CONTRACT.md` into this portal before implementing `frontend/src/lib/backend/supabase/`. The browser uses only the public anon key and recruiter JWT. Candidate lists must use the approved blind views; identity is available only through the audited reveal function.

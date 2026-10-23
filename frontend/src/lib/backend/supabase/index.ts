@@ -1,0 +1,3 @@
+// TODO(backend): implement against docs/CONTRACT.md. Candidate data must come only from blind views and reveal-student.
+import type {Backend} from '../types';
+export const supabaseBackend:Backend={auth:{async signIn(){throw new Error('Supabase contract not configured')},async getRole(){throw new Error('Supabase contract not configured')},async signOut(){}},organization:{async get(){throw new Error('Supabase contract not configured')}},jobs:{async list(){throw new Error('Supabase contract not configured')},async save(){throw new Error('Supabase contract not configured')}},matching:{async list(){throw new Error('Supabase contract not configured')}},requests:{async create(){throw new Error('Supabase contract not configured')}}};

@@ -1,0 +1,2 @@
+const patterns=[/[\w.+-]+@[\w.-]+\.[a-z]{2,}/i,/(?:\+?\d[\s().-]*){7,}/,/(?:https?:\/\/|www\.)\S+/i,/(?:^|\s)@[a-z0-9_]{2,}/i];
+export function containsContactDetails(value:string):boolean{return patterns.some(pattern=>pattern.test(value))}

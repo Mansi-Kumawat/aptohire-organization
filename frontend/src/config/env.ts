@@ -1,0 +1,3 @@
+import {z} from 'zod';
+const schema=z.object({VITE_APP_ENV:z.enum(['local','demo','production']).default('local'),VITE_USE_MOCKS:z.string().default('true'),VITE_DEMO_MODE:z.string().default('true'),VITE_SUPABASE_URL:z.string().optional(),VITE_SUPABASE_ANON_KEY:z.string().optional()});
+export const env=schema.parse(import.meta.env);if(env.VITE_APP_ENV==='production'&&(env.VITE_USE_MOCKS!=='false'||env.VITE_DEMO_MODE==='true'))throw new Error('Production requires mocks and demo mode to be disabled.');

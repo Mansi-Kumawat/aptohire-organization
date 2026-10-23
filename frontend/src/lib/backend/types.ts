@@ -1,0 +1,5 @@
+export type Skill={name:string;level:string;verified:boolean};
+export type Candidate={ref:string;alias:string;score:number;confidence:number;category:string;stage:string;projects:number;skills:Skill[];reason:string;status?:string;};
+export type Job={id:string;title:string;status:'Open'|'Paused'|'Closed';openings:number;mode:string;location:string;skills:string[];candidates:number;requests:number;description?:string;};
+export type Organization={name:string;status:'approved'|'pending'|'rejected';subscription:'active'|'inactive';verified:boolean;};
+export type Backend={auth:{signIn(email:string,password:string):Promise<boolean>;getRole():Promise<'organization'|'student'|'university'|'other'|null>;signOut():Promise<void>};organization:{get():Promise<Organization|null>};jobs:{list():Promise<Job[]>;save(job:Job):Promise<Job>};matching:{list(jobId:string):Promise<Candidate[]>};requests:{create(ref:string):Promise<void>}};
