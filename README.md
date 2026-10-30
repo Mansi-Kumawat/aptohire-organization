@@ -1,21 +1,25 @@
 # AptoHire Organization portal
 
-This repository is the independent recruiter-facing portal. It does not import code from the other AptoHire portals. All portals connect to one shared Supabase database; this app never needs a service-role key and never reads identity tables. Recruiters see blind candidate cards from backend views. A student's name and other permitted information can be shown only after the student grants scoped, time-limited access.
+Independent recruiter-facing portal. The browser uses the public Supabase anon key and the signed-in user's session only; it must never use a service-role key or query protected student identity/evidence tables. Candidate cards are blind by default. Personal details and evidence are rendered only after scoped, time-limited consent.
 
 ## Folder layout
-- `frontend/` — React + TypeScript application, UI, routes, and client-side adapters.
-- `backend/` — backend integration notes and contract boundary; database migrations and secrets belong to the separate `aptohire-backend` project, not here.
-- `docs/` — plan and supplied product references.
+- `frontend/` — React + TypeScript application, routes, UI, mock and Supabase adapters.
+- `backend/` — integration notes; migrations, functions, and secrets belong to the separate `aptohire-backend` project.
+- `docs/` — portal contract and audit notes.
 
-## Run locally
+## Run locally (mock)
 1. Install Node.js LTS and Git.
-2. Run `npm install` from this folder.
+2. From this folder run `npm install`.
 3. Copy `.env.example` to `.env.local`.
 4. Keep `VITE_USE_MOCKS=true` and run `npm run dev`.
-5. Open `http://localhost:5176`. Use any non-empty password with a demo account.
+5. Open `http://localhost:5176`. The labelled demo accounts are `recruiter@orga.demo.test`, `recruiter@orgb.demo.test`, `recruiter@orgc.demo.test`, and `recruiter@orgd.demo.test`; mock sign-in accepts any non-empty password.
 
-## Demo accounts
-`recruiter@orga.demo.test`, `recruiter@orgb.demo.test`, `recruiter@orgc.demo.test`, `recruiter@orgd.demo.test`. The portal currently supplies anonymized sample matching data. Mock demo controls shown in Account are prototype affordances and are not a production access workflow.
+Mock actions stay local to the sample workspace and are not real email, request, or hiring workflows.
+
+## Connect a local or approved Supabase environment
+Set `VITE_USE_MOCKS=false`, `VITE_SUPABASE_URL`, and `VITE_SUPABASE_ANON_KEY` in the chosen environment. With `VITE_DEMO_MODE=true`, the labelled demo-account shortcuts remain available while authentication and portal requests use the real Supabase backend; their password is supplied through `VITE_DEMO_PASSWORD`. Production validation allows this real-backend demo-login mode but rejects mock data. Use only dedicated demo accounts and a non-privileged demo credential: Vite `VITE_*` values are included in browser code. Never commit `.env.local` or put a service-role key in the frontend. Configure Auth redirect URLs for the actual deployment domains before testing signup and recovery.
+
+The adapter calls the frozen contract's auth, organization, job, matching, access request/reveal, directory, notification, and pipeline surfaces. Review [`docs/CONTRACT.md`](./docs/CONTRACT.md) and [`docs/FROZEN-CONTRACTS.md`](./docs/FROZEN-CONTRACTS.md) alongside the backend's current contracts. Local type/lint/test/build passing does **not** establish live Supabase or hosted-project parity.
 
 ## Commands
 | Command | Purpose |
@@ -28,7 +32,8 @@ This repository is the independent recruiter-facing portal. It does not import c
 | `npm run e2e` | Playwright (setup required) |
 | `npm run db:types` | Generate Supabase types using project ref |
 
-To connect Supabase, set its URL and public anon key, set `VITE_USE_MOCKS=false`, then copy the authoritative `docs/CONTRACT.md` from `aptohire-backend`. Authentication redirect URLs should include `https://organization.aptohire.com/**` and `http://localhost:5176/**`. The `supabase/` adapter must then be implemented against that contract. The other four portals are separately deployed applications. Deploy this as its own Vercel project on `organization.aptohire.com`. Vercel Hobby is intended for non-commercial demos.
-
-## Important limitations
-This implementation remains a runnable UI prototype. It now includes the contact-checked access-request dialog and mock organization states for pending approval and inactive subscription. The real Supabase adapter, complete Auth and role gates, consent-based reveal, all privacy tests, complete demo tools, and production security policies are not complete. Do not set this app to production or use it for real candidate data. Never add the service-role key.
+## Known integration limitations
+- Live Auth, RLS, Edge Function, realtime, and signed-storage behavior have not been independently verified against the target Supabase project.
+- The backend's `extract-job-skills` response currently exposes skill slugs, levels, weights, and an optional title suggestion; the UI does not assume unsupported `unclear` or `nice_to_have` response fields.
+- Feedback submission is not enabled: under the current safe browser/backend contract, the portal cannot submit a student ID, and no approved organization-safe feedback function/policy is available.
+- The portal is not certified for production or real candidate data until the owner verifies environment configuration, backend parity, RLS, and authenticated end-to-end flows. Never add a service-role key.
