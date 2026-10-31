@@ -31,7 +31,7 @@ export const accessRequestSchema = z.object({
   id: z.string().uuid(), candidate_ref: z.string().uuid(), job_id: z.string().uuid(), alias: z.string(), status: z.enum(['pending', 'accepted', 'declined', 'withdrawn', 'expired']),
   job_title: z.string(), requested_scope: z.array(accessScopeSchema), granted_scope: z.array(accessScopeSchema), duration_days: z.number().int().nonnegative().nullable(),
   created_at: z.string().datetime({ offset: true }), expires_at: z.string().datetime({ offset: true }).nullable(), message: z.string().nullable(),
-  pipeline_stage: z.enum(['interviewing','offered','closed']).nullable().optional(), responded_at: z.string().datetime({ offset: true }).nullable().optional()
+  pipeline_stage: z.enum(['reviewed','interviewing','offered','closed']).nullable().optional(), responded_at: z.string().datetime({ offset: true }).nullable().optional()
 }).strip();
 export const revealSchema = z.object({
   request_id: z.string().uuid(), granted_scope: z.array(accessScopeSchema), expires_at: z.string().datetime({ offset: true }),
@@ -67,8 +67,18 @@ const mapStatus = (value: string): Job['status'] => value === 'open' ? 'Open' : 
 export const supabaseBackend: Backend = {
   auth: {
     async signIn(email, password) {
-      const { data, error } = await getClient().auth.signInWithPassword({ email: email.trim(), password });
+      const supabase = getClient();
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error || !data.user) throw safeFunctionError(error);
+      // Recover users whose Auth row was created but profile-role setup previously failed.
+      if (data.user.email_confirmed_at) {
+        const { data: profile, error: profileError } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
+        if (profileError) throw new Error('We signed you in but could not check account setup. Please try again shortly.');
+        if (!profile?.role) {
+          const { error: setupError } = await supabase.functions.invoke('complete-signup', { body: { portal: 'organization' } });
+          if (setupError) throw new Error('We found your account, but setup is still incomplete. Please try signing in again later; do not create another account.');
+        }
+      }
       sessionStorage.setItem('org-user', data.user.email ?? email.trim());
       return true;
     },
@@ -302,7 +312,7 @@ export const supabaseBackend: Backend = {
   pipeline: {
     async move(requestId, stage) {
       const id = z.string().uuid().parse(requestId);
-      const validatedStage = z.enum(['interviewing', 'offered', 'closed']).nullable().parse(stage);
+      const validatedStage = z.enum(['reviewed', 'interviewing', 'offered', 'closed']).nullable().parse(stage);
       const { error } = await getClient().from('access_requests').update({ pipeline_stage: validatedStage }).eq('id', id).eq('status', 'accepted');
       if (error) throw safeFunctionError(error);
     }

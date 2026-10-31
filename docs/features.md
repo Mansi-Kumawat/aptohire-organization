@@ -144,7 +144,7 @@
 | F-OR-06 | **Candidate card detail**: skill breakdown, proof summary (no identity, no raw files) | P0 | [ ] |
 | F-OR-07 | **Request access**: select candidate(s), message, requested scope, duration | P0 | [ ] |
 | F-OR-08 | **Accepted candidates**: full profile, resume, contact details, project evidence — within the granted scope and duration; shows expiry | P0 | [ ] |
-| F-OR-09 | **Pipeline**: Matched → Requested → Accepted → Interviewing → Offered/Closed (manual status) | P1 | [ ] |
+| F-OR-09 | **Pipeline**: Matched → Requested → Accepted → Reviewed → Interviewing → Offered/Closed. Matched/Requested/Accepted are system/consent states; after acceptance, recruiters may update Reviewed and later stages by drag-and-drop or keyboard-accessible stage menu. | P1 | [ ] |
 | F-OR-10 | **Structured feedback** to students (reviewed option lists + optional short note) | P1 | [ ] |
 | F-OR-11 | **Match explanation drawer**: structured skill/level match, vector similarity contribution, gaps | P1 | [ ] |
 | F-OR-12 | Directory of universities and other organizations (public info only for universities; per the authority rules for organizations) | P1 | [ ] |

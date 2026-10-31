@@ -16,7 +16,7 @@ export type AccessScope = 'profile' | 'scorecard' | 'projects' | 'contact';
 export type AccessRequest = {
   id: string; candidateRef: string; alias: string; status: 'pending' | 'accepted' | 'declined' | 'withdrawn' | 'expired';
   jobTitle: string; jobId?: string; requestedScope: AccessScope[]; grantedScope: AccessScope[]; durationDays: number | null;
-  createdAt: string; expiresAt: string | null; message: string; pipelineStage?: 'interviewing' | 'offered' | 'closed' | null; respondedAt?: string | null;
+  createdAt: string; expiresAt: string | null; message: string; pipelineStage?: 'reviewed' | 'interviewing' | 'offered' | 'closed' | null; respondedAt?: string | null;
 };
 export type Reveal = {
   request_id: string; granted_scope: AccessScope[]; expires_at: string;
@@ -50,7 +50,7 @@ export type Backend = {
     list(): Promise<AccessRequest[]>;
     reveal(id: string): Promise<Reveal>;
   };
-  pipeline: { move(requestId: string, stage: 'interviewing' | 'offered' | 'closed' | null): Promise<void> };
+  pipeline: { move(requestId: string, stage: 'reviewed' | 'interviewing' | 'offered' | 'closed' | null): Promise<void> };
   directory: { universities(): Promise<DirectoryEntry[]>; organizations(): Promise<DirectoryEntry[]> };
   notifications: { list(): Promise<PortalNotification[]>; subscribe(onChange: () => void): Promise<() => void> };
 };

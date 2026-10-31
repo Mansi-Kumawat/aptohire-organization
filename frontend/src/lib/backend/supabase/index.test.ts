@@ -20,6 +20,11 @@ describe('organization Supabase contract schemas', () => {
     expect('full_name' in stripped).toBe(false);
   });
 
+  it('accepts the internal Reviewed stage without exposing additional candidate identity', () => {
+    const row = { id: '00000000-0000-4000-8000-000000000001', candidate_ref: '00000000-0000-4000-8000-000000000002', job_id: '00000000-0000-4000-8000-000000000003', alias: 'Candidate M3Q8', status: 'accepted', job_title: 'Frontend Developer', requested_scope: ['profile'], granted_scope: ['profile'], duration_days: 30, created_at: '2026-10-30T10:00:00.000Z', expires_at: '2026-11-29T10:00:00.000Z', message: null, pipeline_stage: 'reviewed', responded_at: null };
+    expect(accessRequestSchema.parse(row).pipeline_stage).toBe('reviewed');
+  });
+
   it('accepts only the revealed response contract and rejects unrelated identity fields at the root', () => {
     const response = { request_id: '00000000-0000-4000-8000-000000000001', granted_scope: ['profile'], expires_at: '2026-11-29T10:00:00.000Z', profile: { full_name: 'Aarav Sharma' } };
     expect(revealSchema.parse(response).profile?.full_name).toBe('Aarav Sharma');
